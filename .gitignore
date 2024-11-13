@@ -2,3 +2,6 @@
 
 # Ignore all files and folders starting with storage-
 storage-*
+
+agent-tutorial/avanza_screenshot.png
+agent-tutorial/*.png
