@@ -5,3 +5,9 @@ storage-*
 
 agent-tutorial/avanza_screenshot.png
 agent-tutorial/*.png
+
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
