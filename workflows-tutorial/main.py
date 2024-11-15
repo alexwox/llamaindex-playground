@@ -1,27 +1,13 @@
 import os
 import asyncio
 from dotenv import load_dotenv
-from llama_index.core.llms import ChatMessage
-from llama_index.core.tools import ToolSelection, ToolOutput
-from llama_index.core.workflow import Event
 
-from typing import Any, List
-
-from llama_index.core.llms.function_calling import FunctionCallingLLM
-from llama_index.core.memory import ChatMemoryBuffer
-from llama_index.core.tools.types import BaseTool
-from llama_index.core.workflow import Workflow, StartEvent, StopEvent, step
-
-class InputEvent(Event):
-    input: list[ChatMessage]
+from llama_index.tools.tavily_research import TavilyToolSpec
+from llama_index.core.agent import ReActAgent
+from llama_index.llms.openai import OpenAI
+from llama_index.core.tools import FunctionTool
 
 
-class ToolCallEvent(Event):
-    tool_calls: list[ToolSelection]
-
-
-class FunctionOutputEvent(Event):
-    output: ToolOutput
 
 
 async def main():
@@ -30,13 +16,25 @@ async def main():
 
     # Access the OPENAI_API_KEY
     openai_api_key = os.getenv('OPENAI_API_KEY')
-    borsdata_api_key = os.getenv('BORSDATA_API_KEY')
-
+    #borsdata_api_key = os.getenv('BORSDATA_API_KEY')
+    tavily_api_key = os.getenv('TAVILY_API_KEY')
+        
     if openai_api_key is None:
         raise ValueError("OPENAI_API_KEY not found in the environment variables")
-    if borsdata_api_key is None:
-        raise ValueError("BORSDATA_API_KEY not found in the environment variables")
+    #if borsdata_api_key is None:
+    #    raise ValueError("BORSDATA_API_KEY not found in the environment variables")
+    if tavily_api_key is None:
+        raise ValueError("TAVILY_API_KEY not found in the environment variables")
+
+    llm = OpenAI(model="gpt-3.5-turbo", temperature=0)
     
+    # Initialize the Tavily tool
+    tavily_tool = TavilyToolSpec(
+        api_key=tavily_api_key,
+    )
+    agent = ReActAgent.from_tools(tavily_tool.to_tool_list(), llm=llm, verbose=True)
+
+    agent.chat('What happened in the latest Burning Man festival?')
     
 
 
